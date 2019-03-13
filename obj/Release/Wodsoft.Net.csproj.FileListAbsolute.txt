@@ -1,0 +1,5 @@
+D:\TeamFoundation\Wodsoft\Wodsoft.Net\Wodsoft.Net\bin\Release\Wodsoft.Net.dll
+D:\TeamFoundation\Wodsoft\Wodsoft.Net\Wodsoft.Net\bin\Release\Wodsoft.Net.pdb
+D:\TeamFoundation\Wodsoft\Wodsoft.Net\Wodsoft.Net\obj\Release\Wodsoft.Net.csprojResolveAssemblyReference.cache
+D:\TeamFoundation\Wodsoft\Wodsoft.Net\Wodsoft.Net\obj\Release\Wodsoft.Net.dll
+D:\TeamFoundation\Wodsoft\Wodsoft.Net\Wodsoft.Net\obj\Release\Wodsoft.Net.pdb

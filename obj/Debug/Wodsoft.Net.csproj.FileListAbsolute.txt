@@ -1,0 +1,11 @@
+D:\TeamFoundation\Wodsoft\Wodsoft.Net\Wodsoft.Net\bin\Debug\Wodsoft.Net.dll
+D:\TeamFoundation\Wodsoft\Wodsoft.Net\Wodsoft.Net\bin\Debug\Wodsoft.Net.pdb
+D:\TeamFoundation\Wodsoft\Wodsoft.Net\Wodsoft.Net\obj\Debug\Wodsoft.Net.csprojResolveAssemblyReference.cache
+D:\TeamFoundation\Wodsoft\Wodsoft.Net\Wodsoft.Net\obj\Debug\Wodsoft.Net.dll
+D:\TeamFoundation\Wodsoft\Wodsoft.Net\Wodsoft.Net\obj\Debug\Wodsoft.Net.pdb
+C:\Users\aserfend\Desktop\Wodsoft.Net\bin\Debug\Wodsoft.Net.dll
+C:\Users\aserfend\Desktop\Wodsoft.Net\bin\Debug\Wodsoft.Net.pdb
+C:\Users\aserfend\Desktop\Wodsoft.Net\obj\Debug\Wodsoft.Net.csprojAssemblyReference.cache
+C:\Users\aserfend\Desktop\Wodsoft.Net\obj\Debug\Wodsoft.Net.csproj.CoreCompileInputs.cache
+C:\Users\aserfend\Desktop\Wodsoft.Net\obj\Debug\Wodsoft.Net.dll
+C:\Users\aserfend\Desktop\Wodsoft.Net\obj\Debug\Wodsoft.Net.pdb

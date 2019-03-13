@@ -1,0 +1,7 @@
+C:\Users\aserfend\Desktop\Wodsoft.Net\bin\Debug\Wodsoft.Net.dll
+C:\Users\aserfend\Desktop\Wodsoft.Net\bin\Debug\Wodsoft.Net.pdb
+C:\Users\aserfend\Desktop\Wodsoft.Net\bin\Debug\Wodsoft.Net.dll.CodeAnalysisLog.xml
+C:\Users\aserfend\Desktop\Wodsoft.Net\bin\Debug\Wodsoft.Net.dll.lastcodeanalysissucceeded
+C:\Users\aserfend\Desktop\Wodsoft.Net\obj\Debug\SfBaseTcp.csproj.CoreCompileInputs.cache
+C:\Users\aserfend\Desktop\Wodsoft.Net\obj\Debug\Wodsoft.Net.dll
+C:\Users\aserfend\Desktop\Wodsoft.Net\obj\Debug\Wodsoft.Net.pdb
