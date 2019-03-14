@@ -46,9 +46,12 @@ namespace SfBaseTcp.Net.Sockets
         /// </summary>
         public void Disconnect()
         {
-            //判断是否已连接
-            if (!IsConnected)
-                throw new SocketException(10057);
+			//判断是否已连接
+			if (!IsConnected)
+			{
+				Disconnected(true);
+				return;
+			}
             lock (this)
             {
                 //Socket异步断开并等待完成
@@ -68,13 +71,17 @@ namespace SfBaseTcp.Net.Sockets
         /// </summary>
         public void DisconnectAsync()
         {
-            //判断是否已连接
-            if (!IsConnected)
-                throw new SocketException(10057);
+			
             lock (this)
             {
-                //Socket异步断开
-                Socket.BeginDisconnect(true, EndDisconnect, false);
+				//判断是否已连接
+				if (!IsConnected)
+				{
+					Disconnected(true);
+					return;
+				}
+				//Socket异步断开
+				Socket.BeginDisconnect(true, EndDisconnect, false);
             }
         }
 
@@ -114,9 +121,9 @@ namespace SfBaseTcp.Net.Sockets
         /// <param name="data">要发送的数据。</param>
         public void Send(byte[] data)
         {
-            //是否已连接
-            if (!IsConnected)
-                throw new SocketException(10057);
+			//是否已连接
+			if (!IsConnected)
+				return;
             //发送的数据不能为null
             if (data == null)
                 throw new ArgumentNullException("data");
@@ -189,28 +196,53 @@ namespace SfBaseTcp.Net.Sockets
             }
         }
 
-        #endregion
+		#endregion
 
-        #region 接收数据
-
-        protected void EndReceive(IAsyncResult result)
+		#region 接收数据
+		private void ValidateData(byte[] src,out byte[] dst)
+		{
+			int rawLength = src.Length;
+			int validLength = rawLength;
+			unsafe
+			{
+				fixed (byte* p = src)
+				{
+					for (int i = 0; i < rawLength; i++)
+					{
+						if (p[i] == 0)
+						{
+							validLength = i;
+							break;
+						}
+					}
+					byte[] newData = new byte[validLength];
+					Buffer.BlockCopy(src, 0, newData, 0, validLength);
+					dst = newData;
+				}
+			}
+			
+		}
+		protected void EndReceive(IAsyncResult result)
         {
             SocketAsyncState state = (SocketAsyncState)result.AsyncState;
             //接收到的数据
-            byte[] data = Handler.EndReceive(result);
+            byte[] rawData = Handler.EndReceive(result);
+			 
+			ValidateData(rawData, out byte[] data);
             //如果数据长度为0，则断开Socket连接
             if (data.Length == 0)
             {
-                Disconnected(true);
+				DisconnectAsync();
                 return;
             }
-            //再次开始接收数据
-            Handler.BeginReceive(Stream, EndReceive, state);
+			//引发接收完成事件
+			ReceiveCompleted?.Invoke(this, new SocketEventArgs(this, SocketAsyncOperation.Receive) { Data = data });
+			//再次开始接收数据
+			if (IsConnected )
+				Handler.BeginReceive(Stream, EndReceive, state);
 
-            //引发接收完成事件
-            if (ReceiveCompleted != null)
-                ReceiveCompleted(this, new SocketEventArgs(this, SocketAsyncOperation.Receive) { Data = data });
-        }
+			
+		}
 
         #endregion
 

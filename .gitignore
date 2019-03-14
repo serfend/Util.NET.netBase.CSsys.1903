@@ -1,0 +1,10 @@
+
+*.lock
+*.ide
+*.ide-shm
+*.ide-wal
+*.dll
+*.xml
+*.lastcodeanalysissucceeded
+*.pdb
+*.dll

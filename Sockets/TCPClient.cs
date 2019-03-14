@@ -86,10 +86,8 @@ namespace SfBaseTcp.Net.Sockets
             {
                 //出现异常，连接失败。
                 state.Completed = true;
-                //判断是否为异步，异步则引发事件
-                if (state.IsAsync && ConnectCompleted != null)
-                    ConnectCompleted(this, new SocketEventArgs(this, SocketAsyncOperation.Connect));
-                return;
+				ConnectCompleted?.Invoke(this, new SocketEventArgs(this, SocketAsyncOperation.Disconnect));
+				return;
             }
             //连接成功。
             //创建Socket网络流
@@ -105,12 +103,10 @@ namespace SfBaseTcp.Net.Sockets
             }
             //连接完成
             state.Completed = true;
-            if (state.IsAsync && ConnectCompleted != null)
-            {
-                ConnectCompleted(this, new SocketEventArgs(this, SocketAsyncOperation.Connect));
-            }
+			ConnectCompleted?.Invoke(this, new SocketEventArgs(this, SocketAsyncOperation.Connect));
 
-            //开始接收数据
+			//开始接收数据
+			if (IsConnected)
             Handler.BeginReceive(Stream, EndReceive, state);
         }
 

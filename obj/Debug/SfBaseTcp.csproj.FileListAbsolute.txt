@@ -5,3 +5,11 @@ C:\Users\aserfend\Desktop\Wodsoft.Net\bin\Debug\Wodsoft.Net.dll.lastcodeanalysis
 C:\Users\aserfend\Desktop\Wodsoft.Net\obj\Debug\SfBaseTcp.csproj.CoreCompileInputs.cache
 C:\Users\aserfend\Desktop\Wodsoft.Net\obj\Debug\Wodsoft.Net.dll
 C:\Users\aserfend\Desktop\Wodsoft.Net\obj\Debug\Wodsoft.Net.pdb
+D:\aserfend\workSpace\repos\projects\Sf.Base.Net\Util.NET.netBase.CSsys.1903\obj\Debug\SfBaseTcp.csproj.CoreCompileInputs.cache
+D:\aserfend\workSpace\repos\projects\Sf.Base.Net\Util.NET.netBase.CSsys.1903\bin\Debug\SfBaseTcp.dll
+D:\aserfend\workSpace\repos\projects\Sf.Base.Net\Util.NET.netBase.CSsys.1903\bin\Debug\SfBaseTcp.pdb
+D:\aserfend\workSpace\repos\projects\Sf.Base.Net\Util.NET.netBase.CSsys.1903\obj\Debug\SfBaseTcp.dll
+D:\aserfend\workSpace\repos\projects\Sf.Base.Net\Util.NET.netBase.CSsys.1903\obj\Debug\SfBaseTcp.pdb
+D:\aserfend\workSpace\repos\projects\Sf.Base.Net\Util.NET.netBase.CSsys.1903\bin\Debug\SfBaseTcp.dll.CodeAnalysisLog.xml
+D:\aserfend\workSpace\repos\projects\Sf.Base.Net\Util.NET.netBase.CSsys.1903\bin\Debug\SfBaseTcp.dll.lastcodeanalysissucceeded
+D:\aserfend\workSpace\repos\projects\Sf.Base.Net\Util.NET.netBase.CSsys.1903\obj\Debug\SfBaseTcp.csprojAssemblyReference.cache

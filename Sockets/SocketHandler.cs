@@ -50,7 +50,7 @@ namespace SfBaseTcp.Net.Sockets
 
             //初始化SocketHandlerState
             SocketHandlerState shs = new SocketHandlerState();
-            shs.Data = new byte[2];
+            shs.Data = new byte[READ_BUFFER];
             shs.AsyncResult = result;
             shs.Stream = stream;
             shs.AsyncCallBack = callback;
@@ -59,7 +59,7 @@ namespace SfBaseTcp.Net.Sockets
             //该头信息包含要接收的主要数据长度
             try
             {
-                stream.BeginRead(shs.Data, 0, 2, EndRead, shs);
+                stream.BeginRead(shs.Data, 0, READ_BUFFER, EndRead, shs);
             }
             catch
             {
@@ -71,103 +71,127 @@ namespace SfBaseTcp.Net.Sockets
                 ((AutoResetEvent)result.AsyncWaitHandle).Set();
                 callback(result);
             }
-            return result;
+			
+			return result;
         }
 
-        //stream异步结束读取
-        private void EndRead(IAsyncResult ar)
-        {
-            SocketHandlerState state = (SocketHandlerState)ar.AsyncState;
-            int dataLength;
-            try
-            {
-                dataLength = state.Stream.EndRead(ar);
-            }
-            catch
-            {
-                dataLength = 0;
-            }
-            //dataLength为0则表示Socket断开连接
-            if (dataLength == 0)
-            {
-                lock (StateSet)
-                    StateSet.Add(state.AsyncResult, state);
-                //设定接收到的数据位空byte数组
-                state.Data = new byte[0];
-                //允许等待线程继续
-                ((AutoResetEvent)state.AsyncResult.AsyncWaitHandle).Set();
-                //执行异步回调函数
-                state.AsyncCallBack(state.AsyncResult);
-                return;
-            }
+		private const int READ_BUFFER = 65536;
+		public void EndRead(IAsyncResult ar)
+		{
+			SocketHandlerState state = (SocketHandlerState)ar.AsyncState;
+			if (state.Data[0].Equals(0))
+			{
+				lock (StateSet)
+					StateSet.Add(state.AsyncResult, state);
+				//设定接收到的数据位空byte数组
+				state.Data = new byte[0];
+				//允许等待线程继续
+				((AutoResetEvent)state.AsyncResult.AsyncWaitHandle).Set();
+				//执行异步回调函数
+				state.AsyncCallBack(state.AsyncResult);
+				return;
+			}
+			state.Completed = true;
+			lock (StateSet)
+				StateSet.Add(state.AsyncResult, state);
+			((AutoResetEvent)state.AsyncResult.AsyncWaitHandle).Set();
+			state.AsyncCallBack(state.AsyncResult);
+		}
+		#region raw.EndRead
+		//stream异步结束读取
+		//private void EndRead(IAsyncResult ar)
+		//{
+		//	SocketHandlerState state = (SocketHandlerState)ar.AsyncState;
+		//	int dataLength;
+		//	try
+		//	{
+		//		dataLength = state.Stream.EndRead(ar);
+		//	}
+		//	catch
+		//	{
+		//		dataLength = 0;
+		//	}
+		//	//dataLength为0则表示Socket断开连接
+		//	if (dataLength == 0)
+		//	{
+		//		lock (StateSet)
+		//			StateSet.Add(state.AsyncResult, state);
+		//		//设定接收到的数据位空byte数组
+		//		state.Data = new byte[0];
+		//		//允许等待线程继续
+		//		((AutoResetEvent)state.AsyncResult.AsyncWaitHandle).Set();
+		//		//执行异步回调函数
+		//		state.AsyncCallBack(state.AsyncResult);
+		//		return;
+		//	}
 
-            //如果是已完成状态，则表示state.Data的数据是头信息
-            if (state.Completed)
-            {
-                //设定状态为未完成
-                state.Completed = false;
-                //已接收得数据长度为0
-                state.DataLength = 0;
-                //获取主要数据长度
-                var length = BitConverter.ToUInt16(state.Data, 0);
-                //初始化数据的byte数组
-                state.Data = new byte[length];
-                try
-                {
-                    //开始异步接收主要数据
-                    state.Stream.BeginRead(state.Data, 0, length, EndRead, state);
-                }
-                catch
-                {
-                    //出现Socket异常
-                    lock (StateSet)
-                        StateSet.Add(state.AsyncResult, state);
-                    state.Data = new byte[0];
-                    ((AutoResetEvent)state.AsyncResult.AsyncWaitHandle).Set();
-                    state.AsyncCallBack(state.AsyncResult);
-                }
-                return;
-            }
-            //接收到主要数据
-            else
-            {
-                //判断是否接收了完整的数据
-                if (dataLength + state.DataLength != state.Data.Length)
-                {
-                    //增加已接收数据长度
-                    state.DataLength += dataLength;
-                    try
-                    {
-                        //继续接收数据
-                        state.Stream.BeginRead(state.Data, state.DataLength, state.Data.Length - state.DataLength, EndRead, state);
-                    }
-                    catch
-                    {
-                        //出现Socket异常
-                        lock (StateSet)
-                            StateSet.Add(state.AsyncResult, state);
-                        state.Data = new byte[0];
-                        ((AutoResetEvent)state.AsyncResult.AsyncWaitHandle).Set();
-                        state.AsyncCallBack(state.AsyncResult);
-                        return;
-                    }
-                    return;
-                }
-                //接收完成
-                state.Completed = true;
-                lock (StateSet)
-                    StateSet.Add(state.AsyncResult, state);
-                ((AutoResetEvent)state.AsyncResult.AsyncWaitHandle).Set();
-                state.AsyncCallBack(state.AsyncResult);
-            }
-        }
-
-        /// <summary>
-        /// 结束接收
-        /// </summary>
-        /// <param name="asyncResult">异步结果</param>
-        /// <returns>接收到的数据</returns>
-        public byte[] EndReceive(IAsyncResult asyncResult)
+		//	//如果是已完成状态，则表示state.Data的数据是头信息
+		//	if (state.Completed)
+		//	{
+		//		//设定状态为未完成
+		//		state.Completed = false;
+		//		//已接收得数据长度为0
+		//		state.DataLength = 0;
+		//		//获取主要数据长度
+		//		var length = BitConverter.ToUInt16(state.Data, 0);
+		//		//初始化数据的byte数组
+		//		state.Data = new byte[length];
+		//		try
+		//		{
+		//			//开始异步接收主要数据
+		//			state.Stream.BeginRead(state.Data, 0, length, EndRead, state);
+		//		}
+		//		catch
+		//		{
+		//			//出现Socket异常
+		//			lock (StateSet)
+		//				StateSet.Add(state.AsyncResult, state);
+		//			state.Data = new byte[0];
+		//			((AutoResetEvent)state.AsyncResult.AsyncWaitHandle).Set();
+		//			state.AsyncCallBack(state.AsyncResult);
+		//		}
+		//		return;
+		//	}
+		//	//接收到主要数据
+		//	else
+		//	{
+		//		//判断是否接收了完整的数据
+		//		if (dataLength + state.DataLength != state.Data.Length)
+		//		{
+		//			//增加已接收数据长度
+		//			state.DataLength += dataLength;
+		//			try
+		//			{
+		//				//继续接收数据
+		//				state.Stream.BeginRead(state.Data, state.DataLength, state.Data.Length - state.DataLength, EndRead, state);
+		//			}
+		//			catch
+		//			{
+		//				//出现Socket异常
+		//				lock (StateSet)
+		//					StateSet.Add(state.AsyncResult, state);
+		//				state.Data = new byte[0];
+		//				((AutoResetEvent)state.AsyncResult.AsyncWaitHandle).Set();
+		//				state.AsyncCallBack(state.AsyncResult);
+		//				return;
+		//			}
+		//			return;
+		//		}
+		//		//接收完成
+		//		state.Completed = true;
+		//		lock (StateSet)
+		//			StateSet.Add(state.AsyncResult, state);
+		//		((AutoResetEvent)state.AsyncResult.AsyncWaitHandle).Set();
+		//		state.AsyncCallBack(state.AsyncResult);
+		//	}
+		//}
+		#endregion
+		/// <summary>
+		/// 结束接收
+		/// </summary>
+		/// <param name="asyncResult">异步结果</param>
+		/// <returns>接收到的数据</returns>
+		public byte[] EndReceive(IAsyncResult asyncResult)
         {
             //判断异步操作状态是否属于当前处理程序
             SocketHandlerState state;
@@ -177,6 +201,7 @@ namespace SfBaseTcp.Net.Sockets
                     throw new ArgumentException("无法识别的asyncResult。");
                 state = StateSet[asyncResult];
                 StateSet.Remove(asyncResult);
+				state.Completed = true;
             }
             return state.Data;
         }
@@ -233,24 +258,24 @@ namespace SfBaseTcp.Net.Sockets
                     return result;
             }
 
-            //获取数据长度
-            //ushort的最大值为65535
-            //转换为byte[]长度为2
-            var dataLength = BitConverter.GetBytes((ushort)data.Length);
-            //向对方发送长度为2的头信息，表示接下来要发送的数据长度
-            try
-            {
-                stream.Write(dataLength, 0, dataLength.Length);
-            }
-            catch
-            {
-                result.CompletedSynchronously = true;
-                shs.Completed = false;
-                lock (StateSet)
-                    StateSet.Add(result, shs);
-                ((AutoResetEvent)result.AsyncWaitHandle).Set();
-                callback(result);
-            }
+            ////获取数据长度
+            ////ushort的最大值为65535
+            ////转换为byte[]长度为2
+            //var dataLength = BitConverter.GetBytes((ushort)data.Length);
+            ////向对方发送长度为2的头信息，表示接下来要发送的数据长度
+            //try
+            //{
+            //    stream.Write(dataLength, 0, dataLength.Length);
+            //}
+            //catch
+            //{
+            //    result.CompletedSynchronously = true;
+            //    shs.Completed = false;
+            //    lock (StateSet)
+            //        StateSet.Add(result, shs);
+            //    ((AutoResetEvent)result.AsyncWaitHandle).Set();
+            //    callback(result);
+            //}
             //开始异步发送数据
             try
             {
@@ -314,11 +339,11 @@ namespace SfBaseTcp.Net.Sockets
                     //获取数据长度
                     //ushort的最大值为65535
                     //转换为byte[]长度为2
-                    var dataLength = BitConverter.GetBytes((ushort)prepare.Data.Length);
+                    //var dataLength = BitConverter.GetBytes((ushort)prepare.Data.Length);
                     //向对方发送长度为2的头信息，表示接下来要发送的数据长度
                     try
                     {
-                        prepare.Stream.Write(dataLength, 0, dataLength.Length);
+                        //prepare.Stream.Write(dataLength, 0, dataLength.Length);
                         //开始异步发送数据
                         prepare.Stream.BeginWrite(prepare.Data, 0, prepare.Data.Length, EndWrite, prepare).AsyncWaitHandle.WaitOne();
                     }
@@ -350,14 +375,16 @@ namespace SfBaseTcp.Net.Sockets
             }
             return state.Completed;
         }
-    }
 
+	}
+	
     internal class SocketHandlerState
     {
         /// <summary>
         /// 数据
         /// </summary>
         public byte[] Data { get; set; }
+		
         /// <summary>
         /// 异步结果
         /// </summary>

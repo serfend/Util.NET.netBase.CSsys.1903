@@ -107,10 +107,9 @@ namespace SfBaseTcp.Net.Sockets
             lock (clients)
                 clients.Add(client);
 
-            //客户端连接事件
-            if (AcceptCompleted != null)
-                AcceptCompleted(this, new SocketEventArgs(client, SocketAsyncOperation.Accept));
-        }
+			//客户端连接事件
+			AcceptCompleted?.Invoke(this, new SocketEventArgs(client, SocketAsyncOperation.Accept));
+		}
 
         /// <summary>
         /// 停止服务。
@@ -194,14 +193,30 @@ namespace SfBaseTcp.Net.Sockets
             return clients.GetEnumerator();
         }
 
-        /// <summary>
-        /// 释放资源
-        /// </summary>
-        public void Dispose()
-        {
-            if (socket == null)
-                return;
-            Stop();
-        }
-    }
+		#region IDisposable Support
+		private bool disposedValue = false; // 要检测冗余调用
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					Stop();
+				}
+
+				disposedValue = true;
+			}
+		}
+
+		// 添加此代码以正确实现可处置模式。
+		public void Dispose()
+		{
+			// 请勿更改此代码。将清理代码放入以上 Dispose(bool disposing) 中。
+			Dispose(true);
+		}
+		#endregion
+
+
+	}
 }
