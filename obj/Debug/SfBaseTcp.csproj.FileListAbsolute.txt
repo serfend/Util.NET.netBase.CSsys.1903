@@ -12,4 +12,3 @@ D:\aserfend\workSpace\repos\projects\Sf.Base.Net\Util.NET.netBase.CSsys.1903\obj
 D:\aserfend\workSpace\repos\projects\Sf.Base.Net\Util.NET.netBase.CSsys.1903\obj\Debug\SfBaseTcp.pdb
 D:\aserfend\workSpace\repos\projects\Sf.Base.Net\Util.NET.netBase.CSsys.1903\bin\Debug\SfBaseTcp.dll.CodeAnalysisLog.xml
 D:\aserfend\workSpace\repos\projects\Sf.Base.Net\Util.NET.netBase.CSsys.1903\bin\Debug\SfBaseTcp.dll.lastcodeanalysissucceeded
-D:\aserfend\workSpace\repos\projects\Sf.Base.Net\Util.NET.netBase.CSsys.1903\obj\Debug\SfBaseTcp.csprojAssemblyReference.cache

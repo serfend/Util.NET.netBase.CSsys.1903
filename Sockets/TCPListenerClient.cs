@@ -28,10 +28,17 @@ namespace SfBaseTcp.Net.Sockets
             //设置服务器
             Listener = listener;
 
-            //开始异步接收数据
-            SocketAsyncState state = new SocketAsyncState();
-            Handler.BeginReceive(Stream, EndReceive, state);
+			  
         }
+		private bool beenStart = false;
+		public void Start()
+		{
+			if (beenStart) return;
+			beenStart = true;
+			//开始异步接收数据
+			SocketAsyncState state = new SocketAsyncState();
+			Handler.BeginReceive(Stream, EndReceive, state);
+		}
 
         public TCPListener Listener { get; private set; }
 

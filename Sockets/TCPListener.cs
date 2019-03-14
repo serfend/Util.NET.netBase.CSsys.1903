@@ -98,17 +98,19 @@ namespace SfBaseTcp.Net.Sockets
 
             //实例化客户端类
             TCPListenerClient client = new TCPListenerClient(this, clientSocket);
-            //增加事件钩子
-            client.SendCompleted += client_SendCompleted;
+			//增加客户端
+			lock (clients)
+			{
+				clients.Add(client);
+				//客户端连接事件
+				AcceptCompleted?.Invoke(this, new SocketEventArgs(client, SocketAsyncOperation.Accept));
+			}
+			//增加事件钩子
+			client.SendCompleted += client_SendCompleted;
             client.ReceiveCompleted += client_ReceiveCompleted;
             client.DisconnectCompleted += client_DisconnectCompleted;
 
-            //增加客户端
-            lock (clients)
-                clients.Add(client);
-
-			//客户端连接事件
-			AcceptCompleted?.Invoke(this, new SocketEventArgs(client, SocketAsyncOperation.Accept));
+			client.Start();
 		}
 
         /// <summary>

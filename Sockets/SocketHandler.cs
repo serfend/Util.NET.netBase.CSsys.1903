@@ -368,8 +368,9 @@ namespace SfBaseTcp.Net.Sockets
             SocketHandlerState state;
             lock (StateSet)
             {
-                if (!StateSet.ContainsKey(asyncResult))
-                    throw new ArgumentException("无法识别的asyncResult。");
+				if (!StateSet.ContainsKey(asyncResult))
+					return true;
+					//throw new ArgumentException("无法识别的asyncResult。");
                 state = StateSet[asyncResult];
                 StateSet.Remove(asyncResult);
             }
