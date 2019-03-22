@@ -27,9 +27,12 @@ namespace SfBaseTcp.Net.Sockets
             }
             //设置服务器
             Listener = listener;
+			listener.Handler.OnError = (x) => {
+				this.Disconnect();
+			};
 
-			  
-        }
+
+		}
 		private bool beenStart = false;
 		public void Start()
 		{

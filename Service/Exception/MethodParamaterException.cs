@@ -6,6 +6,7 @@ using System.Net;
 
 namespace SfBaseTcp.Net.Service
 {
+	[Serializable]
     public class MethodParamaterException : Exception
     {
         public MethodParamaterException(string channelName, string methodName, IPEndPoint endPoint, object[] args)

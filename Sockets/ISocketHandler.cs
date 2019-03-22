@@ -42,5 +42,10 @@ namespace SfBaseTcp.Net.Sockets
         /// <param name="asyncResult">异步结果</param>
         /// <returns>发送是否成功</returns>
         bool EndSend(IAsyncResult asyncResult);
+
+		/// <summary>
+		/// 当发生错误时回调
+		/// </summary>
+		AsyncCallback OnError { set; get; }
     }
 }

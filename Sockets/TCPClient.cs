@@ -21,6 +21,7 @@ namespace SfBaseTcp.Net.Sockets
         public TCPClient()
             : base(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp), new SocketHandler())
         {
+			this.Disconnect();
         }
 
         public bool IsUseAuthenticate { get; set; }
@@ -38,20 +39,32 @@ namespace SfBaseTcp.Net.Sockets
                 throw new InvalidOperationException("已连接至服务器。");
             if (endpoint == null)
                 throw new ArgumentNullException("endpoint");
-            //锁定自己，避免多线程同时操作
-            lock (this)
+			//锁定自己，避免多线程同时操作
+			if (isConnecting) return;
+			isConnecting = true;
+
+			lock (this)
             {
                 SocketAsyncState state = new SocketAsyncState();
-                //Socket异步连接
-                Socket.BeginConnect(endpoint, EndConnect, state).AsyncWaitHandle.WaitOne();
+				//Socket异步连接
+				try
+				{
+					Socket.BeginConnect(endpoint, EndConnect, state).AsyncWaitHandle.WaitOne();
+				}
+				catch 
+				{
+					Disconnect();
+				}
                 //等待异步全部处理完成
                 while (!state.Completed) 
                 {
                     Thread.Sleep(1);
                 }
             }
-        }
+			isConnecting = false;
 
+		}
+		private bool isConnecting = false;
         /// <summary>
         /// 异步连接至服务器。
         /// </summary>

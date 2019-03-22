@@ -41,6 +41,7 @@ namespace SfBaseTcp.Net.Communication
         {
             if (timedOut && ((ISocket)state).IsConnected)
             {
+				Console.WriteLine("connection disconnect because the authenticateTimeout");
                 ((ISocket)state).Disconnect();
             }
             ((ISocket)state)["timeout"] = null;
@@ -60,6 +61,7 @@ namespace SfBaseTcp.Net.Communication
         {
             if (e.Data[0] != 0)
             {
+				Console.WriteLine("connection is disconnect by e.Data[0]!=0");
                 e.Socket.Disconnect();
             }
             else

@@ -23,7 +23,7 @@ namespace SfBaseTcp.Net.Sockets
         {
             clients = new HashSet<TCPListenerClient>();
             IsStarted = false;
-            Handler = new SocketHandler();
+			Handler = new SocketHandler();
             IsUseAuthenticate = false;
         }
 
@@ -118,21 +118,18 @@ namespace SfBaseTcp.Net.Sockets
         /// </summary>
         public void Stop()
         {
-            lock (this)
+            if (!IsStarted)
+                throw new InvalidOperationException("没有开始服务。");
+            foreach (TCPListenerClient client in clients)
             {
-                if (!IsStarted)
-                    throw new InvalidOperationException("没有开始服务。");
-                foreach (TCPListenerClient client in clients)
-                {
-                    client.Disconnect();
-                    client.DisconnectCompleted -= client_DisconnectCompleted;
-                    client.ReceiveCompleted -= client_ReceiveCompleted;
-                    client.SendCompleted -= client_SendCompleted;
-                }
-                socket.Close();
-                socket = null;
-                IsStarted = false;
+                client.Disconnect();
+                client.DisconnectCompleted -= client_DisconnectCompleted;
+                client.ReceiveCompleted -= client_ReceiveCompleted;
+                client.SendCompleted -= client_SendCompleted;
             }
+            socket.Close();
+            socket = null;
+            IsStarted = false;
         }
 
         /// <summary>
@@ -205,8 +202,10 @@ namespace SfBaseTcp.Net.Sockets
 				if (disposing)
 				{
 					Stop();
+					if (socket != null)
+					socket.Dispose();
 				}
-
+				socket = null;
 				disposedValue = true;
 			}
 		}

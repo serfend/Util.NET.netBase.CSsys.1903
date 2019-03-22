@@ -55,27 +55,29 @@ namespace SfBaseTcp.Net.Sockets
             shs.Stream = stream;
             shs.AsyncCallBack = callback;
             shs.Completed = true;
-            //开始异步接收长度为2的头信息
-            //该头信息包含要接收的主要数据长度
-            try
-            {
-                stream.BeginRead(shs.Data, 0, READ_BUFFER, EndRead, shs);
-            }
-            catch
-            {
-                result.CompletedSynchronously = true;
-                shs.Data = new byte[0];
-                shs.Completed = false;
-                lock (StateSet)
-                    StateSet.Add(result, shs);
-                ((AutoResetEvent)result.AsyncWaitHandle).Set();
-                callback(result);
-            }
-			
+			try
+			{
+				stream.BeginRead(shs.Data, 0, READ_BUFFER, EndRead, shs);
+			}
+			catch
+			{
+				result.CompletedSynchronously = true;
+				shs.Data = new byte[0];
+				shs.Completed = false;
+				lock (StateSet)
+					StateSet.Add(result, shs);
+				((AutoResetEvent)result.AsyncWaitHandle).Set();
+				callback(result);
+			}
+
+
 			return result;
         }
 
 		private const int READ_BUFFER = 65536;
+
+		public AsyncCallback OnError { get; set; }
+
 		public void EndRead(IAsyncResult ar)
 		{
 			SocketHandlerState state = (SocketHandlerState)ar.AsyncState;

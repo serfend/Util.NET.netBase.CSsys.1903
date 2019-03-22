@@ -9,7 +9,8 @@ using System.Text;
 
 namespace SfBaseTcp.Net.Sockets
 {
-    public class SocketBase : ISocket, IDisposable
+
+	public class SocketBase : ISocket, IDisposable
     {
         protected Socket Socket { get; private set; }
         protected Stream Stream { get; set; }
@@ -71,18 +72,22 @@ namespace SfBaseTcp.Net.Sockets
         /// </summary>
         public void DisconnectAsync()
         {
-			
-            lock (this)
-            {
-				//判断是否已连接
-				if (!IsConnected)
-				{
-					Disconnected(true);
-					return;
-				}
-				//Socket异步断开
+			//判断是否已连接
+			if (!IsConnected)
+			{
+				Disconnected(true);
+				return;
+			}
+			//Socket异步断开
+			try
+			{
+
 				Socket.BeginDisconnect(true, EndDisconnect, false);
-            }
+			}
+			catch (Exception)
+			{
+				Disconnected(true);
+			}
         }
 
         private void EndDisconnect(IAsyncResult result)
@@ -232,7 +237,7 @@ namespace SfBaseTcp.Net.Sockets
             //如果数据长度为0，则断开Socket连接
             if (data.Length == 0)
             {
-				DisconnectAsync();
+				Disconnected(true);
                 return;
             }
 			//引发接收完成事件
@@ -304,12 +309,8 @@ namespace SfBaseTcp.Net.Sockets
         /// </summary>
         public void Dispose()
         {
-            lock (this)
-            {
-                if (IsConnected)
-                    Socket.Disconnect(false);
-                Socket.Close();
-            }
+			Socket.Close();
+			Socket.Dispose();
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ using System.Net;
 
 namespace SfBaseTcp.Net.Service
 {
+	[Serializable]
     public class MethodNotExistException : Exception
     {
         public MethodNotExistException(string channelName, string methodName, IPEndPoint endPoint)

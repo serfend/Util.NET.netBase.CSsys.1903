@@ -6,6 +6,7 @@ using System.Net;
 
 namespace SfBaseTcp.Net.Service
 {
+	[Serializable]
     public class MethodRuntimeException : Exception
     {
         public MethodRuntimeException(string channelName, string methodName, IPEndPoint endPoint)
